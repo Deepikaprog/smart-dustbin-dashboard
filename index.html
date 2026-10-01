@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Smart Dustbin Dashboard</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            background: #070B16;
+            color: white;
+            text-align: center;
+        }
+
+        .header {
+            padding: 30px 20px;
+        }
+
+        .header h1 {
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: #aaa;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: auto;
+            padding: 20px;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: #121827;
+            padding: 25px;
+            border-radius: 18px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+        }
+
+        .icon {
+            font-size: 35px;
+        }
+
+        .value {
+            font-size: 30px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .label {
+            color: #aaa;
+            margin-top: 8px;
+        }
+
+        .team {
+            margin-top: 30px;
+        }
+
+        .team p {
+            margin: 8px;
+            color: #ccc;
+        }
+
+        .online {
+            color: #00e676;
+        }
+
+        .footer {
+            margin-top: 30px;
+            padding: 20px;
+            color: #777;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+        <h1>♻️ Smart Dustbin</h1>
+        <p>IoT Based Smart Waste Management System</p>
+        <p><b>II - CSE</b></p>
+    </div>
+
+    <div class="container">
+
+        <div class="cards">
+
+            <div class="card">
+                <div class="icon">📏</div>
+                <div class="value" id="distance">-- cm</div>
+                <div class="label">Distance</div>
+            </div>
+
+            <div class="card">
+                <div class="icon">🗑️</div>
+                <div class="value" id="lid">--</div>
+                <div class="label">Lid Status</div>
+            </div>
+
+            <div class="card">
+                <div class="icon">📊</div>
+                <div class="value" id="status">--</div>
+                <div class="label">Dustbin Status</div>
+            </div>
+
+            <div class="card">
+                <div class="icon">🟢</div>
+                <div class="value online">ONLINE</div>
+                <div class="label">System Status</div>
+            </div>
+
+        </div>
+
+        <div class="card team">
+            <h2>👥 Team Members</h2>
+
+            <p>Dhisha Y S</p>
+            <p>Desiya R</p>
+            <p>Deepika P S</p>
+        </div>
+
+    </div>
+
+    <div class="footer">
+        Smart Dustbin | II-CSE
+    </div>
+
+
+<script>
+
+const CHANNEL_ID = "3517107";
+
+async function updateDashboard() {
+
+    try {
+
+        const url =
+        `https://api.thingspeak.com/channels/${CHANNEL_ID}/feeds.json?results=1`;
+
+        const response = await fetch(url);
+
+        const data = await response.json();
+
+        const feed = data.feeds[0];
+
+        if (feed) {
+
+            document.getElementById("distance").innerText =
+                feed.field1 ? feed.field1 + " cm" : "-- cm";
+
+            document.getElementById("lid").innerText =
+                feed.field2 == "1" ? "OPEN" : "CLOSED";
+
+            document.getElementById("status").innerText =
+                feed.field3 == "1" ? "OBJECT DETECTED" : "EMPTY";
+        }
+
+    } catch (error) {
+
+        console.log("Unable to get ThingSpeak data");
+
+    }
+}
+
+updateDashboard();
+
+// Refresh every 20 seconds
+setInterval(updateDashboard, 20000);
+
+</script>
+
+</body>
+</html>
